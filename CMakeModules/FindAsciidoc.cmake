@@ -8,14 +8,25 @@
 # Next variables are used by soma macroes:
 #  ASCIIDOC_ARGS: Additional argumets supplied to asciidoc executable
 #  ASCIIDOC_A2X_ARGS: Additional argumets supplied to a2x executable
+#  ASCIIDOC_A2X_<format>_ARGS: Additional argumets supplied to a2x executable only for the specified format
 #
 # It also provides the following macros:
+# build_asciidoc_( <adoc_file> FORMAT format [ALL] [DESTINATION <dir>] [LANG lang] [OUTPUT file_path] [EXTRA <dir_or_file> ...]  )
+#   Build documentattion out of the given adoc_file to the desiref FORMAT.
+#   If DESTINATION is given, install then the apropriate install rules will be creaated.
+#   If ALL is specified, the documentation will be build for all target.
+#   If LANG is given additional lang=<lang> attribute will be passed to either asciidoc or a2x
+#   If OUTPUT is given the output file will be placed on the given path (supported not by all FORMATs).
+#   If EXTRA is given, the extra files (like images or stylesheets) are copied to the
+#     output directory (required by asciidoc to work correct). And depending on the chosen
+#     FORMAT may be installed if DESTINATION is specified.
+#   It creates a custom target asciidoc
 #========= Copyright =================================================#
-#  Copyright (C) 2014 Alexander Golubev (Fat-Zer) <fatzer2@gmail.com>
+#  Copyright (C) 2014-2015 Alexander Golubev (Fat-Zer) <fatzer2@gmail.com>
 #
 #  This file is dual licensed. You may use and distribute it providing
-#  that you comply EITHER with the terms of the 3-clause BSD license, 
-#  OR the GPLv2+ license. It is not necessary to comply with both 
+#  that you comply EITHER with the terms of the 3-clause BSD license,
+#  OR the GPLv2+ license. It is not necessary to comply with both
 #  licenses, only one.
 #=====================================================================#
 
