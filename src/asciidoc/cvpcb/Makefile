@@ -63,7 +63,7 @@ adoc-all: $(foreach i,$(LANGUAGES),$(DOCNAME)-$(i).adoc)
 
 ################ HTML
 
-#English html
+#English html<F4><F4>
 $(DOCNAME).html: $(DOCNAME).adoc
 	asciidoc $(TOC2) -a 'newline=\n' --section-numbers $(DOCNAME).adoc ;
 

@@ -5,15 +5,15 @@
 #  ASCIIDOC_FOUND: True if asciidoc has been found.
 #  ASCIIDOC_VERSION_STRING: the version of asciidoc found
 #
-# Next variables are used by soma macroes:
-#  ASCIIDOC_ARGS: Additional argumets supplied to asciidoc executable
-#  ASCIIDOC_A2X_ARGS: Additional argumets supplied to a2x executable
-#  ASCIIDOC_A2X_<format>_ARGS: Additional argumets supplied to a2x executable only for the specified format
+# Next variables are used by soma macros:
+#  ASCIIDOC_ARGS: Additional arguments supplied to asciidoc executable
+#  ASCIIDOC_A2X_ARGS: Additional arguments supplied to a2x executable
+#  ASCIIDOC_A2X_<format>_ARGS: Additional arguments supplied to a2x executable only for the specified format
 #
 # It also provides the following macros:
 # build_asciidoc_( <adoc_file> FORMAT format [ALL] [DESTINATION <dir>] [LANG lang] [OUTPUT file_path] [EXTRA <dir_or_file> ...]  )
-#   Build documentattion out of the given adoc_file to the desiref FORMAT.
-#   If DESTINATION is given, install then the apropriate install rules will be creaated.
+#   Build documentation out of the given adoc_file to the desired FORMAT.
+#   If DESTINATION is given, the appropriate install rules will be created.
 #   If ALL is specified, the documentation will be build for all target.
 #   If LANG is given additional lang=<lang> attribute will be passed to either asciidoc or a2x
 #   If OUTPUT is given the output file will be placed on the given path (supported not by all FORMATs).
@@ -57,6 +57,7 @@ find_package_handle_standard_args( Asciidoc
     VERSION_VAR ASCIIDOC_VERSION_STRING
 )
 
+
 function(_asciidoc_unique_target_name _name _unique_name)
     set( propertyName "_asciidoc_unique_counter_${_name}" )
     get_property( currentCounter GLOBAL PROPERTY "${propertyName}" )
@@ -69,6 +70,7 @@ function(_asciidoc_unique_target_name _name _unique_name)
     endif( )
     set_property( GLOBAL PROPERTY ${propertyName} ${currentCounter} )
 endfunction()
+
 
 function( _asciidoc_switch_format_settings _format _parser _extension _extra_install)
     if(     ${_format} STREQUAL "html" )
@@ -127,10 +129,11 @@ function( _asciidoc_switch_format_settings _format _parser _extension _extra_ins
     endif( )
 endfunction()
 
+
 function( build_asciidoc _adoc_file )
-    set(options ALL)
-    set(oneValueArgs DESTINATION FORMAT LANG OUTPUT)
-    set(multiValueArgs EXTRA )
+    set( options ALL)
+    set( oneValueArgs DESTINATION FORMAT LANG OUTPUT)
+    set( multiValueArgs EXTRA )
     cmake_parse_arguments( _parsed "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if( NOT _parsed_FORMAT )
@@ -169,7 +172,7 @@ function( build_asciidoc _adoc_file )
 
     if ( _asciidoc_parser STREQUAL "asciidoc")
         if( _parsed_LANG )
-            list( APPEND _asciidoc_args -l ${_parsed_LANG} )
+            list( APPEND _asciidoc_args -a "lang=${_parsed_LANG}" )
         endif( )
         list( APPEND _asciidoc_args ${ASCIIDOC_ARGS} )
         add_custom_command( OUTPUT ${_output}

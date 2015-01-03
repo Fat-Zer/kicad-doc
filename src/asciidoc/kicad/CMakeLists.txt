@@ -1,8 +1,4 @@
 #  Copyright (C) 2014 Alexander Golubev (Fat-Zer) <fatzer2@gmail.com>#
 
-build_asciidoc( kicad.adoc 
-    ALL
-    DESTINATION ${KICAD_DOC_PATH}
-    FORMAT ${KICAD_DOC_FORMAT}
-    EXTRA images
-)
+kicad_doc_build( kicad.adoc EXTRA images)
+kicad_doc_translate( kicad.adoc EXTRA images)
