@@ -47,11 +47,17 @@ function( kicad_doc_translate _doc )
 
     foreach( _lang ${KICAD_DOC_TRANSLATIONS} )
         set( _current_po "${CMAKE_CURRENT_SOURCE_DIR}/po/${_lang}.po" )
-        if( EXISTS "${_current_po}")
+
+        if( EXISTS "${_current_po}" )
             set( _translated_doc "${CMAKE_CURRENT_BINARY_DIR}/${_doc_basename}-${_lang}.${_doc_ext}" )
+            set( _addendum "${CMAKE_CURRENT_SOURCE_DIR}/po/addendum.${_lang}" )
+            if( EXISTS "${_addendum}" )
+                set( _po4a_extra_args ADDENDUM "${_addendum}")
+            endif( )
             po4a_translate( "${_doc}" "${_current_po}"
                 FORMAT asciidoc
                 OUTPUT "${_translated_doc}"
+                ${_po4a_extra_args}
             )
             kicad_doc_build ( "${_translated_doc}" LANG "${_lang}" ${_build_asciidoc_args})
         endif( )

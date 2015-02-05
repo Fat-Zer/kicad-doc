@@ -13,11 +13,12 @@
 #  PO4A_TRANSLATE_ARGS: Additional argumets supplied to po4a-translate executable
 #
 # It also provides the following macros:
-# po4a_translate( <master_file> <po_file> FORMAT format [ALL] [DESTINATION <dir>] [OUTPUT file_path] )
+# po4a_translate( <master_file> <po_file> FORMAT format [ALL] [DESTINATION <dir>] [ADDENDUM <addendum> ...] [OUTPUT file_path] )
 #   Translate master_file in the given FORMAT using the po_file translated file.
 #   If DESTINATION is given, the appropriate install rule will be created.
 #   If ALL is specified, the translation will be build for the all target.
 #   If OUTPUT is given the output file will be placed on the given path, otherwise the output will be defaulted to <master_file_name>_<po_file_name>.
+#   If ADDENDUM is given, the appropriate --addendum arguments are passed to the po4a.
 #========= Copyright =================================================#
 #  Copyright (C) 2015 Alexander Golubev (Fat-Zer) <fatzer2@gmail.com>
 #
@@ -83,7 +84,7 @@ endfunction()
 function (po4a_translate _master _po)
     set( options ALL )
     set( oneValueArgs DESTINATION FORMAT OUTPUT )
-    set( multiValueArgs )
+    set( multiValueArgs ADDENDUM )
     cmake_parse_arguments( _parsed "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     get_filename_component( _master_name "${_master}" NAME)
@@ -102,12 +103,16 @@ function (po4a_translate _master _po)
         set( _output ${CMAKE_CURRENT_BINARY_DIR}/${_master_name} )
     endif( )
 
+    foreach( _addendum ${_parsed_ADDENDUM} )
+        list( APPEND _addendum_args "--addendum" "${_addendum}" )
+    endforeach( )
+
     add_custom_command( OUTPUT "${_output}"
         COMMAND "${PO4A_TRANSLATE_EXECUTABLE}" -f "${_parsed_FORMAT}" -m "${_master}" -p "${_po}" 
-            -l "${_output}" ${PO4A_TRANSLATE_ARGS}
+            -l "${_output}" ${_addendum_args} ${PO4A_TRANSLATE_ARGS}
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         DEPENDS "${_master}" "${_po}"
-        )
+    )
 
     if( _parsed_DESTINATION )
         install( FILES ${_output} DESTINATION ${_parsed_DESTINATION} )

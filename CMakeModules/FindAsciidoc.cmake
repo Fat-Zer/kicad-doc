@@ -11,7 +11,7 @@
 #  ASCIIDOC_A2X_<format>_ARGS: Additional arguments supplied to a2x executable only for the specified format
 #
 # It also provides the following macros:
-# build_asciidoc_( <adoc_file> FORMAT format [ALL] [DESTINATION <dir>] [LANG lang] [OUTPUT file_path] [EXTRA <dir_or_file> ...]  )
+# build_asciidoc( <adoc_file> FORMAT format [ALL] [DESTINATION <dir>] [LANG lang] [OUTPUT file_path] [EXTRA <dir_or_file> ...]  )
 #   Build documentation out of the given adoc_file to the desired FORMAT.
 #   If DESTINATION is given, the appropriate install rules will be created.
 #   If ALL is specified, the documentation will be build for all target.
@@ -58,7 +58,7 @@ find_package_handle_standard_args( Asciidoc
 )
 
 
-function(_asciidoc_unique_target_name _name _unique_name)
+function( _asciidoc_unique_target_name _name _unique_name )
     set( propertyName "_asciidoc_unique_counter_${_name}" )
     get_property( currentCounter GLOBAL PROPERTY "${propertyName}" )
     if( NOT currentCounter )
