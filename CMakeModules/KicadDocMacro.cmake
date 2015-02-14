@@ -6,7 +6,7 @@
 function( kicad_doc_build _doc )
     set( options )
     set( oneValueArgs LANG )
-    set( multiValueArgs EXTRA_DATA )
+    set( multiValueArgs EXTRA_DATA EXTRA_SOURCE )
     cmake_parse_arguments( _parsed "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if( _parsed_EXTRA_SOURCE )
@@ -33,7 +33,7 @@ endfunction( )
 function( kicad_doc_translate _doc )
     set( options )
     set( oneValueArgs )
-    set( multiValueArgs EXTRA_DATA )
+    set( multiValueArgs EXTRA_DATA EXTRA_SOURCE )
     cmake_parse_arguments( _parsed "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     get_filename_component( _doc_name "${_doc}" NAME)
@@ -46,18 +46,18 @@ function( kicad_doc_translate _doc )
         if( EXISTS "${_current_po}" )
             # reset some variables
             set( _translated_extra_doc )
-            set( _build_asciidoc_args )
+            set( _kicad_doc_build_args )
+            set( _po4a_extra_args )
 
             set( _translate_dir "${CMAKE_CURRENT_BINARY_DIR}/${_lang}" )
 
             # translate additional source files
-            foreach( _source_doc "${_doc}" ${_parsed_EXTRA_SOURCE} )
+            foreach( _source_doc ${_parsed_EXTRA_SOURCE} )
                 get_filename_component( _source_doc_name "${_source_doc}" NAME)
                 set( _translated_doc "${_translate_dir}/${_source_doc_name}" )
                 po4a_translate( "${_source_doc}" "${_current_po}"
                     FORMAT asciidoc
                     OUTPUT "${_translated_doc}"
-                    ${_po4a_extra_args}
                 )
                 list( APPEND _translated_extra_doc "${_translated_doc}" )
             endforeach( )
@@ -75,16 +75,15 @@ function( kicad_doc_translate _doc )
                 OUTPUT "${_translated_doc}"
                 ${_po4a_extra_args}
             )
-
             if( _translated_extra_doc )
-                list( APPEND _build_asciidoc_args EXTRA_SOURCE ${_translated_extra_doc})
+                list( APPEND _kicad_doc_build_args EXTRA_SOURCE ${_translated_extra_doc})
             endif( )
 
             if( _parsed_EXTRA_DATA )
-                list( APPEND _build_asciidoc_args EXTRA_DATA ${_parsed_EXTRA_DATA})
+                list( APPEND _kicad_doc_build_args EXTRA_DATA ${_parsed_EXTRA_DATA})
             endif( )
 
-            kicad_doc_build( "${_translated_doc}" LANG "${_lang}" ${_build_asciidoc_args} )
+            kicad_doc_build( "${_translated_doc}" LANG "${_lang}" ${_kicad_doc_build_args} )
 
             # add updatepo[-*] targets
             po4a_updatepo( "${_doc}" "${_current_po}"
