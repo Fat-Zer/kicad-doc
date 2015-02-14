@@ -26,5 +26,7 @@ set( ASCIIDOC_A2X_pdf_ARGS --dblatex-opts "-P latex.output.revhistory=0 -P doc.p
     CACHE INTERNAL "Some additional argument to be passed to a2x for pdf format")
 set( PO4A_TRANSLATE_ARGS -k 0 -M utf-8
     CACHE INTERNAL "Some additional argument to be passed to po4a-translate")
+set( PO4A_UPDATE_ARGS -M utf-8
+    CACHE INTERNAL "Some additional argument to be passed to po4a-update")
 
 add_subdirectory( src )

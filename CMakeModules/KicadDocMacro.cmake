@@ -8,11 +8,11 @@ function( kicad_doc_build _doc )
     set( oneValueArgs LANG )
     set( multiValueArgs EXTRA )
     cmake_parse_arguments( _parsed "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-    
+
     if( _parsed_EXTRA )
         list( APPEND _build_asciidoc_args EXTRA ${_parsed_EXTRA})
     endif( )
-    
+
     if( _parsed_EXTRA )
         list( APPEND _build_asciidoc_args EXTRA ${_parsed_EXTRA})
     endif( )
@@ -36,7 +36,7 @@ function( kicad_doc_translate _doc )
     set( oneValueArgs )
     set( multiValueArgs EXTRA )
     cmake_parse_arguments( _parsed "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-   
+
     if( _parsed_EXTRA )
         list( APPEND _build_asciidoc_args EXTRA ${_parsed_EXTRA})
     endif( )
@@ -59,7 +59,13 @@ function( kicad_doc_translate _doc )
                 OUTPUT "${_translated_doc}"
                 ${_po4a_extra_args}
             )
-            kicad_doc_build ( "${_translated_doc}" LANG "${_lang}" ${_build_asciidoc_args})
+            kicad_doc_build( "${_translated_doc}" LANG "${_lang}" ${_build_asciidoc_args} )
+
+            # add an updatepo[-*] targets
+            po4a_updatepo( "${_doc}" "${_current_po}"
+                TARGET updatepo "updatepo-${_lang}" "updatepo-${_doc_basename}-${_lang}"
+                FORMAT asciidoc
+            )
         endif( )
     endforeach( )
 endfunction( )
