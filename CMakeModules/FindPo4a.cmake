@@ -157,10 +157,14 @@ function( po4a_updatepo _master _po )
     get_filename_component( _po_name "${_po}" NAME)
     string( REGEX REPLACE "^(.+)\\.([^.]+)$" "\\1" _po_basename "${_po_name}")
 
+    foreach( _master_file ${_master} ${_parsed_EXTRA_MASTER} )
+        list( APPEND _master_args "-m" "${_master_file}" )
+    endforeach( )
+
     _po4a_unique_target_name( "po4a_update_${_master_basename}_${_po_basename}" _unique_target )
 
     add_custom_target( "${_unique_target}"
-        po4a-updatepo -f "${_parsed_FORMAT}" -m "${_master}" ${_parsed_EXTRA_MASTER} -p "${_po}" ${PO4A_UPDATE_ARGS}
+        po4a-updatepo -f "${_parsed_FORMAT}" ${_master_args} ${_parsed_EXTRA_MASTER} -p "${_po}" ${PO4A_UPDATE_ARGS}
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         DEPENDS "${_master}"
     )
