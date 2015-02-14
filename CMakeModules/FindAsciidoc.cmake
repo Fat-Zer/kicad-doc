@@ -11,13 +11,14 @@
 #  ASCIIDOC_A2X_<format>_ARGS: Additional arguments supplied to a2x executable only for the specified format
 #
 # It also provides the following macros:
-# build_asciidoc( <adoc_file> FORMAT format [ALL] [DESTINATION <dir>] [LANG lang] [OUTPUT file_path] [EXTRA <dir_or_file> ...]  )
+# build_asciidoc( <adoc_file> FORMAT format [ALL] [DESTINATION <dir>] [LANG lang] [OUTPUT file_path] [EXTRA_DATA <dir_or_file> ...] [EXTRA_SOURCE <source> ..]  )
 #   Build documentation out of the given adoc_file to the desired FORMAT.
 #   If DESTINATION is given, the appropriate install rules will be created.
 #   If ALL is specified, the documentation will be build for all target.
 #   If LANG is given additional lang=<lang> attribute will be passed to either asciidoc or a2x
 #   If OUTPUT is given the output file will be placed on the given path (supported not by all FORMATs).
-#   If EXTRA is given, the extra files (like images or stylesheets) are copied to the
+#   If EXTRA_SOURCE is given, the targeet document is depend uppon those extra source files
+#   If EXTRA_DATA is given, the extra files (like images or stylesheets) are copied to the
 #     output directory (required by asciidoc to work correct). And depending on the chosen
 #     FORMAT may be installed if DESTINATION is specified.
 #   It creates a custom target asciidoc
@@ -132,8 +133,8 @@ endfunction()
 
 function( build_asciidoc _adoc_file )
     set( options ALL)
-    set( oneValueArgs DESTINATION FORMAT LANG OUTPUT)
-    set( multiValueArgs EXTRA )
+    set( oneValueArgs DESTINATION FORMAT LANG OUTPUT )
+    set( multiValueArgs EXTRA_SOURCE EXTRA_DATA )
     cmake_parse_arguments( _parsed "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if( NOT _parsed_FORMAT )
@@ -161,14 +162,18 @@ function( build_asciidoc _adoc_file )
 
     get_filename_component( _output_dir ${_output} DIRECTORY )
 
-    foreach (_extra ${_parsed_EXTRA})
+    foreach (_extra ${_parsed_EXTRA_DATA} )
         get_filename_component( _extra_name ${_extra} NAME)
         file( COPY ${_extra} DESTINATION "${_output_dir}/" )
         file( GLOB_RECURSE _current_extra_files
             FOLLOW_SYMLINKS "${_output_dir}/${_extra}/*" )
 
         list( APPEND _extra_files ${_current_extra_files} )
-    endforeach (_extra _parsed_EXTRA)
+    endforeach (_extra ${_parsed_EXTRA_DATA} )
+
+    foreach (_extra ${_parsed_EXTRA_SOURCE} )
+        list( APPEND _extra_files ${_extra} )
+    endforeach (_extra ${_parsed_EXTRA_SOURCE} )
 
     if ( _asciidoc_parser STREQUAL "asciidoc")
         if( _parsed_LANG )
@@ -209,7 +214,7 @@ function( build_asciidoc _adoc_file )
         install( FILES ${_output} DESTINATION ${_parsed_DESTINATION} )
 
         if( _install_extras )
-            foreach( _extra ${_parsed_EXTRA} )
+            foreach( _extra ${_parsed_EXTRA_DATA} )
                 get_filename_component( _extra_path ${_extra} ABSOLUTE)
                 if( IS_DIRECTORY "${_extra_path}" )
                     install( DIRECTORY ${_extra} DESTINATION ${_parsed_DESTINATION} )

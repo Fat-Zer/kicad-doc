@@ -20,10 +20,11 @@
 #   If ALL is specified, the translation will be build for the all target.
 #   If OUTPUT is given the output file will be placed on the given path, otherwise the output will be defaulted to <master_file_name>_<po_file_name>.
 #   If ADDENDUM is given, the appropriate --addendum arguments are passed to the po4a.
-# po4a_updatepo( <master_file> <po_file> FORMAT format TARGET <target> ... )
-#   Update messages in the given po_file for master_file. This macro is intended to be used to maintain purposes rather than for creating a build time 
+# po4a_updatepo( <master_file> <po_file> FORMAT format TARGET <target> ... [EXTRA_MASTER <master_file> ...] )
+#   Update messages in the given po_file for master_file. This macro is intended to be used to maintain purposes rather than for creating a build time
 #   FORMAT specifies the format of the master_file
 #   TARGET specifies list of targets with which updating of the given po_file should be associated.
+#   If ADDENDUM is given, the additional specified master files are also used to produce the po file.
 #========= Copyright =================================================#
 #  Copyright (C) 2015 Alexander Golubev (Fat-Zer) <fatzer2@gmail.com>
 #
@@ -140,7 +141,7 @@ endfunction ( )
 function( po4a_updatepo _master _po )
     set( options )
     set( oneValueArgs FORMAT )
-    set( multiValueArgs TARGET )
+    set( multiValueArgs TARGET EXTRA_MASTER )
     cmake_parse_arguments( _parsed "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if( NOT _parsed_FORMAT )
@@ -159,7 +160,7 @@ function( po4a_updatepo _master _po )
     _po4a_unique_target_name( "po4a_update_${_master_basename}_${_po_basename}" _unique_target )
 
     add_custom_target( "${_unique_target}"
-        po4a-updatepo -f "${_parsed_FORMAT}" -m "${_master}" -p "${_po}" ${PO4A_UPDATE_ARGS}
+        po4a-updatepo -f "${_parsed_FORMAT}" -m "${_master}" ${_parsed_EXTRA_MASTER} -p "${_po}" ${PO4A_UPDATE_ARGS}
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         DEPENDS "${_master}"
     )
