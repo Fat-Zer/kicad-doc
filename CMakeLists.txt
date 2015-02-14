@@ -29,4 +29,16 @@ set( PO4A_TRANSLATE_ARGS -k 0 -M utf-8
 set( PO4A_UPDATE_ARGS -M utf-8
     CACHE INTERNAL "Some additional argument to be passed to po4a-update")
 
+check_asciidoc_support_format( "${KICAD_DOC_FORMAT}"
+    ASCIIDOC_SUPPORTS_${KICAD_DOC_FORMAT} )
+
+if( NOT "${ASCIIDOC_SUPPORTS_${KICAD_DOC_FORMAT}}" )
+    message( FATAL_ERROR
+        "The asciidoc toolchain unable to produce output for specified format "
+           "(${KICAD_DOC_FORMAT})\n"
+        "Please check your installation.\n"
+        "Some additional information may be found in the CMakeOutput.log"
+    )
+endif( )
+
 add_subdirectory( src )

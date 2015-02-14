@@ -22,6 +22,9 @@
 #     output directory (required by asciidoc to work correct). And depending on the chosen
 #     FORMAT may be installed if DESTINATION is specified.
 #   It creates a custom target asciidoc
+# check_asciidoc_support_format( <format> <var> )
+#   Checks if the asciidoc can generate output in the given format.
+#   If the test successed than the given var is set to true.
 #========= Copyright =================================================#
 #  Copyright (C) 2014-2015 Alexander Golubev (Fat-Zer) <fatzer2@gmail.com>
 #
@@ -239,4 +242,67 @@ function( build_asciidoc _adoc_file )
 
    add_dependencies( asciidoc "${_unique_target}" )
 
-endfunction()
+endfunction( )
+
+
+function( check_asciidoc_support_format _format _var)
+    set( _tmp_dir "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp" )
+    set( _adoc_file "${_tmp_dir}/asciidoc_input.adoc" )
+    set( _cmake_output "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log" )
+
+    file( WRITE "${_adoc_file}"
+        "CMake Asciidoc test\n"
+        "===================\n"
+        "\n"
+        "Hello world\n"
+        "-----------\n"
+        "Hello world coontent\n" )
+
+
+    _asciidoc_switch_format_settings( ${_format} _asciidoc_parser _output_extension _install_extras )
+
+    if( _asciidoc_parser STREQUAL "asciidoc" )
+        set( _out_file "${tmp_dir}/asciidoc_input.${_output_extension}" )
+        set( _command  "${ASCIIDOC_EXECUTABLE}" -b "${_format}" ${ASCIIDOC_ARGS}
+                -o "${_tmp_dir}/${_adoc_basename}.${_output_extension}" "${_adoc_file}" )
+    elseif( _asciidoc_parser STREQUAL "a2x")
+        set( _command "${ASCIIDOC_A2X_EXECUTABLE}" -f "${_format}"
+                ${ASCIIDOC_A2X_${_format}_ARGS} ${ASCIIDOC_A2X_ARGS}
+                -D "${_tmp_dir}" "${_adoc_file}" )
+    else( )
+        message( FATAL_ERROR "Unsupported asciidoc parser util \"${_asciidoc_parser}\"" )
+    endif( )
+
+    execute_process(
+        COMMAND ${_command}
+        WORKING_DIRECTORY "${_tmp_dir}"
+        RESULT_VARIABLE _result
+        OUTPUT_VARIABLE _output
+        ERROR_VARIABLE  _errors
+    )
+
+    # some nice output formating
+    file( READ "${_adoc_file}" _adoc_text )
+    foreach( arg ${_command} )
+        set( _command_string "${_command_string}\"${arg}\" " )
+    endforeach( )
+
+    if( ${_result} EQUAL 0 )
+        set( ${_var} TRUE CACHE INTERNAL "Asciidoc supports format ${_format}")
+        message(STATUS "Testing if asciidoc supports format ${_format} - Success")
+        file(APPEND "${_cmake_output}"
+        "Test if asciidoc(${_asciidoc_parser}) supports ${_format} succeded with the following errors:\n"
+        "${_errors}\n"
+        "Source file was:\n${_adoc_text}\n"
+        "Command was:\n${_command_string}\n")
+    else( )
+        set( ${_var} FALSE CACHE INTERNAL "Asciidoc supports format ${_format}")
+        message(STATUS "Testing if asciidoc supports format ${_format} - Failed")
+        file(APPEND "${_cmake_output}"
+            "Test if asciidoc(${_asciidoc_parser}) supports ${_format} failed with the following errors:\n"
+            "${_errors}\n"
+            "Source file was:\n${_adoc_text}\n"
+            "Command was:\n${_command_string}\n")
+    endif( )
+
+endfunction( )
