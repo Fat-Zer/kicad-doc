@@ -1,6 +1,6 @@
 add_subdirectory( CvPcb )
+add_subdirectory( Eeschema )
 add_subdirectory( Getting_Started_in_KiCad )
 add_subdirectory( IDF_Exporter )
 add_subdirectory( Interactive_Router )
 add_subdirectory( KiCad )
-add_subdirectory( Eeschema )

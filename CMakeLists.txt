@@ -8,7 +8,7 @@ set( KICAD_DOC_PATH share/doc/kicad
 set( KICAD_DOC_FORMAT html
     CACHE STRING "An output kicad documentation format (pdf/html/docbook)" )
 
-set( KICAD_DOC_TRANSLATIONS ru fr it
+set( KICAD_DOC_TRANSLATIONS fr it po ru
     CACHE STRING "A list of documentation translations to build" )
 
 mark_as_advanced( KICAD_DOC_PATH )

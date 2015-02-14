@@ -53,19 +53,19 @@ if( PO4A_EXECUTABLE )
 endif()
 
 mark_as_advanced(
-    PO4A_EXECUTABLE           
-    PO4A_BUILD_EXECUTABLE     
+    PO4A_EXECUTABLE
+    PO4A_BUILD_EXECUTABLE
     PO4A_GETTEXTIZE_EXECUTABLE
-    PO4A_NORMALIZE_EXECUTABLE 
-    PO4A_TRANSLATE_EXECUTABLE 
-    PO4A_UPDATEPO_EXECUTABLE  
+    PO4A_NORMALIZE_EXECUTABLE
+    PO4A_TRANSLATE_EXECUTABLE
+    PO4A_UPDATEPO_EXECUTABLE
 )
 
 find_package( PackageHandleStandardArgs )
 
 find_package_handle_standard_args( po4a
-    REQUIRED_VARS 
-        PO4A_EXECUTABLE 
+    REQUIRED_VARS
+        PO4A_EXECUTABLE
         PO4A_TRANSLATE_EXECUTABLE
         PO4A_UPDATEPO_EXECUTABLE
     VERSION_VAR PO4A_VERSION_STRING
@@ -117,7 +117,7 @@ function (po4a_translate _master _po)
     endforeach( )
 
     add_custom_command( OUTPUT "${_output}"
-        COMMAND "${PO4A_TRANSLATE_EXECUTABLE}" -f "${_parsed_FORMAT}" -m "${_master}" -p "${_po}" 
+        COMMAND "${PO4A_TRANSLATE_EXECUTABLE}" -f "${_parsed_FORMAT}" -m "${_master}" -p "${_po}"
             -l "${_output}" ${_addendum_args} ${PO4A_TRANSLATE_ARGS}
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         DEPENDS "${_master}" "${_po}"
@@ -126,9 +126,9 @@ function (po4a_translate _master _po)
     if( _parsed_DESTINATION )
         install( FILES ${_output} DESTINATION ${_parsed_DESTINATION} )
     endif( _parsed_DESTINATION )
-    
+
     _po4a_unique_target_name( "po4a_translate_${_master_basename}_${_po_basename}" _unique_target )
-    
+
     if( _parsed_ALL )
        add_custom_target( "${_unique_target}" ALL DEPENDS "${_output}" )
     else()
